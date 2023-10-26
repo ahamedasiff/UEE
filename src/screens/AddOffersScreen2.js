@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
-import { SafeAreaView, ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native'
+import { SafeAreaView, ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable, Image } from 'react-native'
 import COLORS from '../consts/colors'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import DateTimePicker from '@react-native-community/datetimepicker';
+import StartUpModelPopup from './StartUpModalPopup';
 
 export default function AddOffersScreen2({ navigation }) {
 
     const[startDate, setStartDate] = useState(new Date());
     const[endDate, setEndDate] = useState(new Date());
     const[showDatePicker, setShowDatePicker] = useState(null)
+    const [visible, setVisble] = useState(false)
    
     // const handletartDateChange = (text) => {
     //     setStartDate(text);
@@ -119,16 +121,43 @@ export default function AddOffersScreen2({ navigation }) {
                     />
                 </View>
                  */}
-                 <View style={styles.fieldContainerUpload}>
+                 {/* <View style={styles.fieldContainerUpload}>
                     <View style={styles.fieldBox}>
                         <Text style={styles.fieldBoxText}>Photo / Flyer</Text>
                     </View>
-                    <TouchableOpacity style={styles.fieldBtn} >
-                        <Icon name="cloud-upload"  size={40} color={COLORS.blue} />
-                    </TouchableOpacity>
+                        <TouchableOpacity style={styles.fieldBtn} >
+                            <Icon name="cloud-upload"  size={40} color={COLORS.blue} />
+                        </TouchableOpacity>
+                    </View> */}
+                <StartUpModelPopup visible={visible}>
+                <View style={{alignItems: 'center'}}>
+                        <View style={styles.header}>
+                            <TouchableOpacity onPress={() => setVisble(false)}>
+                                <Image source={require('../assets/close.png')} style={{height: 30, width:30}}/>
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                    <View style={{alignItems: 'center'}}>
+                        <Image 
+                            source={require('../assets/success.png')} 
+                            style={{height: 150, width: 150, marginVertical: 10}}
+                        />
+                    </View>
+                    
+                    <Text style={{marginVertical: 30, fontSize: 20, textAlign: 'center'}}>
+                        Your Offer Has Been Successfully Added!
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                            style={[styles.confirmButton, { backgroundColor: COLORS.blue }]}
+                            onPress={() => navigation.navigate("StartUpDashboard")}
+                        >
+                            <Text style={styles.buttonText}>Home</Text>
+                        </TouchableOpacity> 
+                    </View>
+                </StartUpModelPopup>
                 <View style={styles.fieldContainer}>
-                    <TouchableOpacity onPress={handleNavigation} style={styles.submitBtn}>
+                    <TouchableOpacity onPress={() => setVisble(true)} style={styles.submitBtn}>
                         <Text style={styles.submitText}>Submit</Text>
                     </TouchableOpacity>
                 </View>
@@ -234,5 +263,28 @@ const styles = StyleSheet.create({
       fieldBoxText: {
         fontSize: 20,
         fontWeight: 'bold'
-      }
+      },
+      header: {
+        width: '100%',
+        height: 40,
+        alignItems: 'flex-end',
+        justifyContent: 'center'
+      },
+      buttonContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: 10,
+    },
+    confirmButton: {
+        padding: 10,
+        borderRadius: 8,
+        width: '70%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
 })

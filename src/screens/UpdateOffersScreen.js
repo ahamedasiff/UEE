@@ -8,7 +8,7 @@ import StartUpModelPopup from './StartUpModalPopup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Image } from 'react-native'
 
-export default function AddOffersScreen1({ navigation }) {
+export default function UpdateOffersScreen({ navigation }) {
 
     const[offerTitle, setofferTitle] = useState('')
     const[offerCategory, setOfferCategory] = useState('')
@@ -61,9 +61,9 @@ export default function AddOffersScreen1({ navigation }) {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
-                <View style={styles.titleView}>
-                    <Text style={styles.titleText}>Offer Details</Text>
-                </View>
+                {/* <View style={styles.titleView}>
+                    <Text style={styles.titleText}>Update Offer</Text>
+                </View> */}
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Title</Text>
                     <TextInput
@@ -188,7 +188,7 @@ export default function AddOffersScreen1({ navigation }) {
                     </View>
                     
                     <Text style={{marginVertical: 30, fontSize: 20, textAlign: 'center'}}>
-                        Your Offer Has Been Successfully Added!
+                        Your Offer Has Been Successfully Updated!
                     </Text>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
@@ -201,7 +201,7 @@ export default function AddOffersScreen1({ navigation }) {
                 </StartUpModelPopup>
                 <View style={styles.fieldContainer}>
                     <TouchableOpacity onPress={() => setVisble(true)} style={styles.submitBtn}>
-                        <Text style={styles.submitText}>Submit</Text>
+                        <Text style={styles.submitText}>Update</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
         color: COLORS.dark, // Text color
     },
     inputLabel: {
-        fontSize: 15,
+        fontSize: 18,
         padding: 5,
         marginBottom: 5,
         fontWeight: 'bold'

@@ -36,7 +36,7 @@ const InitialPage = ({ navigation }) => {
                     <TouchableOpacity
                             style={style.btn}
                             activeOpacity={0.7}
-                            onPress={() => navigation.navigate('LoginPage')}
+                            onPressOut={() => navigation.navigate('StartUpDashboard')}
                         >
                             <Text style={style.textStyle}>Add Your Deals</Text>
                         </TouchableOpacity>
@@ -44,7 +44,7 @@ const InitialPage = ({ navigation }) => {
                         <View style={style.labelRegister}>
                         <Text style={style.labelText}>Register Your Startup </Text>
                     
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('StartupRegistrationPage1')}>
                             <Text style={[style.labelText, {color: COLORS.blue, textDecorationLine: 'underline'}]}>Here</Text>
                         </TouchableOpacity>
                         </View>

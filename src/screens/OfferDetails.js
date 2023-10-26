@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ImageBackground,
   ScrollView,
@@ -7,16 +7,19 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Image
 } from 'react-native';
 import COLORS from '../consts/colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import StartUpModelPopup from './StartUpModalPopup';
 
 const { height } = Dimensions.get('screen');
 
 const OfferDetails = ({navigation, route}) => {
   const item = route.params;
+  const [visible, setVisble] = useState(false)
 
   // const handleBookNow = () => {
   //   navigation.navigate('HotelBooking', {hotel: item})
@@ -41,7 +44,7 @@ const OfferDetails = ({navigation, route}) => {
         backgroundColor="rgba(0,0,0,0)"
       />
       <ImageBackground style={style.headerImage} source={item.image}>
-        <View style={style.header}>
+        <View style={style.headerBack}>
         <Icon
             name="arrow-back-ios"
             size={28}
@@ -65,14 +68,46 @@ const OfferDetails = ({navigation, route}) => {
           <Text style={{fontSize: 17, fontWeight: 'bold', color: COLORS.dark, marginTop: 5}}>{`End Date - ${item.endDate}`}</Text>
 
         </View>
-        
+        <StartUpModelPopup visible={visible}>
+          <View style={{alignItems: 'center'}}>
+            <View style={style.header}>
+              <TouchableOpacity onPress={() => setVisble(false)}>
+                <Image source={require('../assets/close.png')} style={{height: 30, width:30}}/>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={{alignItems: 'center'}}>
+            <Image 
+              source={require('../assets/delete.png')} 
+              style={{height: 150, width: 150, marginVertical: 10}}
+            />
+          </View>
+                    
+          <Text style={{marginVertical: 20, fontSize: 20, textAlign: 'center'}}>
+            Are You Sure You Want To Delete This Offer?
+          </Text>
+          <View style={style.buttonContainer}>
+                <TouchableOpacity
+                  style={[style.confirmButton, { backgroundColor: COLORS.cancel }]}
+                  // onPress={confirmDelete}
+                >
+                  <Text style={style.buttonText}>Confirm</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[style.confirmButton, { backgroundColor: COLORS.blue }]}
+                  onPress={() => setVisble(false)}
+                >
+                  <Text style={style.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+          </View>
+        </StartUpModelPopup>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 15 }}>
-          <TouchableOpacity style={style.btn}>
-          <Text style={{ color: COLORS.white, fontSize: 18, fontWeight: 'bold' }}>Edit</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={style.btnCancel}>
-          <Text style={{ color: COLORS.white, fontSize: 18, fontWeight: 'bold' }}>Delete</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={style.btn} onPress={() => navigation.navigate("UpdateOffersScreen")}>
+              <Text style={{ color: COLORS.white, fontSize: 18, fontWeight: 'bold' }}>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={style.btnCancel} onPress={() => setVisble(true)}>
+              <Text style={{ color: COLORS.white, fontSize: 18, fontWeight: 'bold' }}>Delete</Text>
+            </TouchableOpacity>
           </View>
       </View>
     </ScrollView>
@@ -124,7 +159,7 @@ const style = StyleSheet.create({
     borderBottomWidth: 4, // Border bottom width
     borderBottomColor: COLORS.blue, // Border bottom color
   },
-  header: {
+  headerBack: {
     marginTop: 40,
     flexDirection: 'row',
     alignItems: 'center',
@@ -144,6 +179,28 @@ const style = StyleSheet.create({
     fontSize: 16,
     marginLeft: 5,
     color: COLORS.primary,
+    fontWeight: 'bold',
+  },
+  header: {
+    width: '100%',
+    height: 40,
+    alignItems: 'flex-end',
+    justifyContent: 'center'
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  confirmButton: {
+    padding: 10,
+    borderRadius: 8,
+    width: '45%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  buttonText: {
+    color: 'white',
     fontWeight: 'bold',
   },
 });

@@ -14,29 +14,80 @@ import AddOffersScreen2 from './src/screens/AddOffersScreen2';
 import OffersHome from './src/screens/OffersHome';
 import OfferDetails from './src/screens/OfferDetails';
 import InitialPage from './src/screens/InitialPage';
-InitialPage
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import StartupProfile from './src/screens/StartupProfile';
+import { Ionicons } from '@expo/vector-icons';
+import UpdateOffersScreen from './src/screens/UpdateOffersScreen';
 
 
 const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator()
 
 export default function App() {
+
+  function StartUpDashboard() {
+    return (
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            if (route.name === 'OffersHome') {
+              iconName = focused ? 'home' : 'home-outline';
+            } else if (route.name === 'StartupProfile') {
+              iconName = focused ? 'person' : 'person-outline';
+            }
+
+            return <Ionicons name={iconName} size={size} color={color} />;
+          },
+          tabBarStyle: [
+            {
+              
+              display: 'flex',
+           
+              paddingTop:10
+            },
+            null
+          ],
+          tabBarActiveTintColor: COLORS.blue, // active icon color
+          tabBarInactiveTintColor: 'gray', // inactive icon color
+        })}>
+        <Tab.Screen name="OffersHome" component={OffersHome}
+         options={{
+          headerShown: true,
+          title: 'Offer Home',
+          headerTitleAlign: 'center',
+          headerPressColor: '#3A95C2',
+          headerTitleStyle: {fontSize: 20,color:COLORS.blue},
+          headerStyle:{borderBottomColor:COLORS.blue, borderBottomWidth:1},
+        }} />
+        
+        <Tab.Screen name='StartupProfile' component={StartupProfile}
+         options={{
+          headerShown: true,
+          title: 'Profile',
+          headerTitleAlign: 'center',
+          headerPressColor: '#3A95C2',
+          headerTitleStyle: {fontSize: 20,color:COLORS.blue},
+          headerStyle:{borderBottomColor:COLORS.blue, borderBottomWidth:1},
+        }} />
+      </Tab.Navigator>
+    );
+
+  };
 
   return (
     <NavigationContainer>
       <StatusBar backgroundColor={COLORS.white} barStyle="dark-content" />
-        <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='DriverAccount'>
-            <Stack.Screen name='DriverAccount' component={DriverAccountScreen} options={{title: 'Driver Account'}}/>
-            <Stack.Screen name='DriverProfile' component={DriverProfileScreen} options={{title: 'Driver Profile'}}/>
-            <Stack.Screen name='VehicleInformation' component={VehicleInformationScreen} options={{title: 'Vehicle Account'}}/>
-            <Stack.Screen name='DriverInformation' component={DriverInformationScreen} options={{title: 'Driver Info Account'}}/>
-            <Stack.Screen name='StartupRegistrationPage1' component={StartupRegistrationPage1} options={{title: 'Start up Registration'}}/>
-            <Stack.Screen name='StartupRegistrationPage2' component={StartupRegistrationPage2} options={{title: 'Start up Registration'}}/>
-            <Stack.Screen name='AddOffersScreen1' component={AddOfferScreen1} options={{title: 'Add Deals'}}/>
-            <Stack.Screen name='AddOffersScreen2' component={AddOffersScreen2} options={{title: 'Add Deals'}}/>
-            <Stack.Screen name='OffersHome' component={OffersHome} options={{title: 'Offers Home'}}/>
-            <Stack.Screen name='OfferDetails' component={OfferDetails} creenOptions={{ headerShown: false }}/>
-            <Stack.Screen name='InitialPage' component={InitialPage} creenOptions={{ headerShown: false }}/>
-        </Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: true }} initialRouteName='InitialPage'>
+            <Stack.Screen name='StartupRegistrationPage1' component={StartupRegistrationPage1} options={{title: 'Start up Registration', headerTitleAlign: 'center',}} />
+            <Stack.Screen name='StartupRegistrationPage2' component={StartupRegistrationPage2} options={{title: 'Start up Registration', headerTitleAlign: 'center',}}/>
+            <Stack.Screen name='AddOffersScreen1' component={AddOfferScreen1} options={{title: 'Add Deals', headerTitleAlign: 'center',}}/>
+            <Stack.Screen name='OfferDetails' component={OfferDetails} options={{ headerShown: false }}/>
+            <Stack.Screen name='InitialPage' component={InitialPage} options={{ headerShown: false }}/>
+            <Stack.Screen name='StartUpDashboard' component={StartUpDashboard} options={{ headerShown: false }}/>        
+            <Stack.Screen name='UpdateOffersScreen' component={UpdateOffersScreen} options={{title: 'Update Offer', headerTitleAlign: 'center',}}/>        
+          </Stack.Navigator>
     </NavigationContainer>
   );
 }

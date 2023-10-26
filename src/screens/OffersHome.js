@@ -68,12 +68,15 @@ const OffersHome = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <View style={style.header}>
         <View style={style.headerTextContainer}>
-          <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Your <Text style={{ fontSize: 30, fontWeight: 'bold', color: COLORS.primary }}>
+          <Text style={{ fontSize: 30, fontWeight: 'bold' }}>Your <Text style={{ fontSize: 30, fontWeight: 'bold', color: COLORS.blue }}>
               Offers
             </Text>
           </Text>
-          <View style={{ flexDirection: 'row' }}>            
-          </View>
+          <TouchableOpacity onPress={() => navigation.navigate("AddOffersScreen1")} style={style.submitBtn}>
+            <Text style={style.submitText}>
+              Add Offers
+            </Text>
+          </TouchableOpacity>
         </View>
           {/* <TouchableOpacity onPress={() => navigation.navigate("HotelBookingList")}>
             <Icon name="person-outline"  size={38} color={COLORS.grey} />
@@ -158,6 +161,28 @@ const style = StyleSheet.create({
   flatListContainer: {
     paddingBottom: 20,
   },
+  submitBtn: {
+    backgroundColor: COLORS.blue,
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+    marginLeft: 10,
+    width: '40%',
+    alignSelf: 'flex-end',
+    justifyContent: 'flex-end'
+},
+submitText: {
+    textAlign: 'center',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.white,
+},
+headerTextContainer : {
+  flex: 1,
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center'
+}
 
 });
 
