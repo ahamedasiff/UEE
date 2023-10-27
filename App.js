@@ -13,7 +13,7 @@ import AddOfferScreen1 from './src/screens/AddOfffersScreen1';
 // import AddOffersScreen2 from './src/screens/AddOffersScreen2';
 import OffersHome from './src/screens/OffersHome';
 import OfferDetails from './src/screens/OfferDetails';
-import InitialPage from './src/screens/InitialPage';
+import StartupInitialPage from './src/screens/StartupInitialPage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StartupProfile from './src/screens/StartupProfile';
 import { Ionicons } from '@expo/vector-icons';
@@ -85,7 +85,7 @@ export default function App() {
             <Stack.Screen name='StartupRegistrationPage2' component={StartupRegistrationPage2} options={{title: 'Start up Registration', headerTitleAlign: 'center',}}/>
             <Stack.Screen name='AddOffersScreen1' component={AddOfferScreen1} options={{title: 'Add Deals', headerTitleAlign: 'center',}}/>
             <Stack.Screen name='OfferDetails' component={OfferDetails} options={{ headerShown: false }}/>
-            <Stack.Screen name='InitialPage' component={InitialPage} options={{ headerShown: false }}/>
+            <Stack.Screen name='StartupInitialPage' component={StartupInitialPage} options={{ headerShown: false }}/>
             <Stack.Screen name='SellerScreen' component={SellerScreen} options={{ headerShown: false }}/>
             <Stack.Screen name='StartUpDashboard' component={StartUpDashboard} options={{ headerShown: false }}/>        
             <Stack.Screen name='UpdateOffersScreen' component={UpdateOffersScreen} options={{title: 'Update Offer', headerTitleAlign: 'center',}}/>        

@@ -29,7 +29,7 @@ function SellerScreen( {navigation}) {
                     <TouchableOpacity
                             style={style.btn}
                             activeOpacity={0.7}
-                            onPressOut={() => navigation.navigate('InitialPage')}
+                            onPressOut={() => navigation.navigate('StartupInitialPage')}
                         >
                             <Text style={style.textStyle}>Startup</Text>
                     </TouchableOpacity>

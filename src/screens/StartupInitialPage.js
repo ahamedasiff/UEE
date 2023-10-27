@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
 
-const InitialPage = ({ navigation }) => {
+const StartupInitialPage = ({ navigation }) => {
     return (
         <View style={{ flex: 1, backgroundColor: COLORS.white }}>
             <ScrollView>
@@ -130,4 +130,4 @@ const style = StyleSheet.create({
     },
 })
 
-export default InitialPage
+export default StartupInitialPage
