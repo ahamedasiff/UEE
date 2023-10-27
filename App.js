@@ -1,16 +1,16 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import DriverAccountScreen from './src/screens/DriverAccountScreen';
-import DriverProfileScreen from './src/screens/DriverProfileScreen';
+// import DriverAccountScreen from './src/screens/DriverAccountScreen';
+// import DriverProfileScreen from './src/screens/DriverProfileScreen';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import COLORS from './src/consts/colors';
-import VehicleInformationScreen from './src/screens/VehicleInformationScreen';
-import DriverInformationScreen from './src/screens/DriverInformationScreen';
+// import VehicleInformationScreen from './src/screens/VehicleInformationScreen';
+// import DriverInformationScreen from './src/screens/DriverInformationScreen';
 import StartupRegistrationPage1 from './src/screens/StartupRegistrationPage1';
 import StartupRegistrationPage2 from './src/screens/StartupRegistrationPage2';
 import AddOfferScreen1 from './src/screens/AddOfffersScreen1';
-import AddOffersScreen2 from './src/screens/AddOffersScreen2';
+// import AddOffersScreen2 from './src/screens/AddOffersScreen2';
 import OffersHome from './src/screens/OffersHome';
 import OfferDetails from './src/screens/OfferDetails';
 import InitialPage from './src/screens/InitialPage';
@@ -18,6 +18,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import StartupProfile from './src/screens/StartupProfile';
 import { Ionicons } from '@expo/vector-icons';
 import UpdateOffersScreen from './src/screens/UpdateOffersScreen';
+import SellerScreen from './src/screens/SellerScreen';
 
 
 const Stack = createStackNavigator();
@@ -79,14 +80,16 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar backgroundColor={COLORS.white} barStyle="dark-content" />
-        <Stack.Navigator screenOptions={{ headerShown: true }} initialRouteName='InitialPage'>
+        <Stack.Navigator screenOptions={{ headerShown: true }} initialRouteName='SellerScreen'>
             <Stack.Screen name='StartupRegistrationPage1' component={StartupRegistrationPage1} options={{title: 'Start up Registration', headerTitleAlign: 'center',}} />
             <Stack.Screen name='StartupRegistrationPage2' component={StartupRegistrationPage2} options={{title: 'Start up Registration', headerTitleAlign: 'center',}}/>
             <Stack.Screen name='AddOffersScreen1' component={AddOfferScreen1} options={{title: 'Add Deals', headerTitleAlign: 'center',}}/>
             <Stack.Screen name='OfferDetails' component={OfferDetails} options={{ headerShown: false }}/>
             <Stack.Screen name='InitialPage' component={InitialPage} options={{ headerShown: false }}/>
+            <Stack.Screen name='SellerScreen' component={SellerScreen} options={{ headerShown: false }}/>
             <Stack.Screen name='StartUpDashboard' component={StartUpDashboard} options={{ headerShown: false }}/>        
             <Stack.Screen name='UpdateOffersScreen' component={UpdateOffersScreen} options={{title: 'Update Offer', headerTitleAlign: 'center',}}/>        
+
           </Stack.Navigator>
     </NavigationContainer>
   );

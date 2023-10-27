@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from 'react';
+import React, { useState, useEffect, useCallback} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -16,6 +16,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import COLORS from '../consts/colors';
 import offers from '../consts/offers';
 import rates from '../consts/rates';
+import axios from 'axios';
+import { useFocusEffect } from '@react-navigation/native';
 
 
 const { width } = Dimensions.get('screen');
@@ -24,39 +26,62 @@ const cardWidth = width / 2.2;
 const OffersHome = ({ navigation }) => {
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredHotels, setFilteredHotels] = useState(offers);
+  const [filteredOffers, setFilteredOffers] = useState(offers);
+  const [allOffers, setAllOffers] = useState([])
 
   useEffect(() => {
     // When the search query changes, update the filtered list of hotels
-    const filteredList = offers.filter((offer) =>
-      offer.rate.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredList = allOffers.filter((offer) =>
+      offer.offerRate.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredHotels(filteredList);
-  }, [searchQuery]);
+    setFilteredOffers(filteredList);
+  }, [searchQuery, allOffers]);
 
   const getRateImage = (rate) => {
     const matchingRate = rates.find((r) => r.rate === rate);
     return matchingRate ? matchingRate.image : null;
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      // This effect will run every time the screen comes into focus
+      fetchOffers(); // Refresh the data
+    }, [])
+  );
+
+  const fetchOffers = () => {
+    axios.get('http://192.168.43.9:3000/offers')
+      .then(response => {
+        setAllOffers(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  };
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   const Card = ({ offer}) => (
     <TouchableOpacity
       activeOpacity={1}
-      onPress={() => navigation.navigate('OfferDetails', { ...offer, image: getRateImage(offer.rate) })}>
+      onPress={() => navigation.navigate('OfferDetails', { ...offer, allOffers, image: getRateImage(offer.offerRate) })}>
       <View style={style.card}>
       <View style={style.cardContent}>
         <View style={style.imageContainer}>
-          <Image source={getRateImage(offer.rate)} style={style.cardImage} />
+          <Image source={getRateImage(offer.offerRate)} style={style.cardImage} />
         </View>
         <View style={style.cardDetails}>
-          <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{offer.title}</Text>
-          <Text style={{ color: COLORS.dark, fontSize: 16 }}>{offer.category}</Text>
-          <Text style={{ color: COLORS.dark, fontSize: 16 }}>{offer.rate}</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{offer.offerTitle}</Text>
+          <Text style={{ color: COLORS.dark, fontSize: 16 }}>{offer.offerCategory}</Text>
+          <Text style={{ color: COLORS.dark, fontSize: 16 }}>{offer.offerRate}</Text>
           <Text style={{ color: COLORS.dark, fontSize: 16 }}>
-            {`Start Date - ${offer.startdate}`}
+          {`Start Date - ${offer.startDate ? formatDate(offer.startDate) : 'N/A'}`}
           </Text>
           <Text style={{ color: COLORS.dark, fontSize: 16 }}>
-            {`End Date - ${offer.endDate}`}
+          {`End Date - ${offer.endDate ? formatDate(offer.endDate) : 'N/A'}`}
           </Text>
         </View>
       </View>
@@ -93,9 +118,9 @@ const OffersHome = ({ navigation }) => {
         </View>
         <View style={style.cardContainer}>
         <FlatList
-          data={filteredHotels} // Use the filtered list of hotels
+          data={filteredOffers} // Use the filtered list of hotels
           numColumns={1}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => (item._id ? item._id.toString() : Math.random().toString())}
           renderItem={({ item }) => <Card offer={item} />}
           contentContainerStyle={style.flatListContainer}
         />

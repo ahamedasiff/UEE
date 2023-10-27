@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView, ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native'
 import COLORS from '../consts/colors'
 import categories from '../consts/category'
@@ -7,6 +7,7 @@ import { Picker } from '@react-native-picker/picker'
 import StartUpModelPopup from './StartUpModalPopup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Image } from 'react-native'
+import axios from 'axios'
 
 export default function AddOffersScreen1({ navigation }) {
 
@@ -18,7 +19,14 @@ export default function AddOffersScreen1({ navigation }) {
     const[endDate, setEndDate] = useState(new Date());
     const[showDatePicker, setShowDatePicker] = useState(null)
     const [visible, setVisble] = useState(false)
-   
+
+    const [titleError, setTitleError] = useState(false);
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [titleErrorMessage, setTitleErrorMessage] = useState('');
+    const [descriptionErrorMessage, setDescriptionErrorMessage] = useState('');
+    const [startDateError, setStartDateError] = useState(false);
+    const [endDateError, setEndDateError] = useState(false);
+
     const handleofferTitleChange = (text) => {
         setofferTitle(text);
     };
@@ -39,16 +47,17 @@ export default function AddOffersScreen1({ navigation }) {
     }
 
     const handleDateChange = (event, selectedDate) => {
-        if(event.type === 'set' && selectedDate) {
-            if(showDatePicker === 'startDate') {
-                setStartDate(selectedDate)
-            } else if (showDatePicker === 'endDate'){
-                setEndDate(selectedDate)
+        if (event.type === 'set' && selectedDate) {
+            if (showDatePicker === 'startDate') {
+                setStartDate(selectedDate);
+                setStartDateError(false); // Reset error when the date is changed
+            } else if (showDatePicker === 'endDate') {
+                setEndDate(selectedDate);
+                setEndDateError(false); // Reset error when the date is changed
             }
-            setShowDatePicker(null)
+            setShowDatePicker(null);
         }
     }
-
     const showStartDatePicker = () => {
         setShowDatePicker('startDate')
     }
@@ -57,6 +66,72 @@ export default function AddOffersScreen1({ navigation }) {
         setShowDatePicker('endDate')
     }
 
+    useEffect(() => {
+        if (startDate > endDate) {
+            setStartDateError(true);
+            // setEndDateError(true)
+        } else {
+            setStartDateError(false);
+            // setEndDateError(false)
+        }
+    }, [startDate, endDate]);
+
+    // const handleOfferInsert = async () => {
+    //     const newOffer = {
+    //         offerTitle,
+    //         offerCategory,
+    //         offerRate,
+    //         startDate: startDate.toDateString(),
+    //         endDate: endDate.toDateString(),
+    //         offerDescription
+    //     }
+
+    //     try {
+    //         await axios.post('http://192.168.43.9:3000/offer', newOffer);
+    //         console.log('Offer Added Successfully')
+    //         setVisble(true)
+    //     } catch (error) {
+    //         console.error('Error Insert offer:', error);
+    //     }
+    // }
+    const handleOfferInsert = async () => {
+        // Validate offerTitle and offerDescription
+        if (!offerTitle) {
+            setTitleError(true);
+            setTitleErrorMessage('Enter a Offer Title');
+        } else {
+            setTitleError(false);
+            setTitleErrorMessage('');
+        }
+
+        if (!offerDescription) {
+            setDescriptionError(true);
+            setDescriptionErrorMessage('Enter Offer Description');
+        } else {
+            setDescriptionError(false);
+            setDescriptionErrorMessage('');
+        }
+
+        // Check if there are any validation errors
+        if (offerTitle && offerDescription) {
+            const newOffer = {
+                offerTitle,
+                offerCategory,
+                offerRate,
+                startDate: startDate.toDateString(),
+                endDate: endDate.toDateString(),
+                offerDescription,
+            };
+
+            try {
+                await axios.post('http://192.168.43.9:3000/offer', newOffer);
+                console.log('Offer Added Successfully');
+                setVisble(true);
+            } catch (error) {
+                console.error('Error Insert offer:', error);
+            }
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -67,20 +142,15 @@ export default function AddOffersScreen1({ navigation }) {
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Title</Text>
                     <TextInput
-                        style={styles.inputBox}
+                        style={[styles.inputBox, titleError && styles.inputError]} // Apply inputError style on validation error
                         placeholder="Enter Offer Name"
                         value={offerTitle}
                         onChangeText={handleofferTitleChange}
                     />
                 </View>
+                {titleError && <Text style={styles.errorMessage}>{titleErrorMessage}</Text>}
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Category</Text>
-                    {/* <TextInput
-                        style={styles.inputBox}
-                        placeholder="Enter Offer Category"
-                        value={offerCategory}
-                        onChangeText={handleOfferCategoryChange}
-                    /> */}
                     <View style={styles.pickerContainer}>
                     <Picker
                         selectedValue = {offerCategory}
@@ -94,13 +164,6 @@ export default function AddOffersScreen1({ navigation }) {
                 </View>
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Rate</Text>
-                    
-                    {/* <TextInput
-                        style={styles.inputBox}
-                        placeholder="Enter Offer Rate"
-                        value={offerRate}
-                        onChangeText={handleOfferRateChange}
-                    /> */}
                     <View style={styles.pickerContainer}>
                     <Picker
                         selectedValue = {offerRate}
@@ -115,12 +178,6 @@ export default function AddOffersScreen1({ navigation }) {
 
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Start Date</Text>
-                    {/* <TextInput
-                        style={styles.inputBox}
-                        placeholder="Enter OFfer Start Date"
-                        value={startDate}
-                        onChangeText={handletartDateChange}
-                    /> */}
                     {showDatePicker === 'startDate' && (
                         <DateTimePicker 
                             mode='date'
@@ -131,13 +188,16 @@ export default function AddOffersScreen1({ navigation }) {
                     )}
                     <Pressable onPress={showStartDatePicker}>
                         <TextInput
-                            style={styles.inputBox}
+                            style={[
+                                styles.inputBox,
+                                startDateError && styles.inputError
+                            ]}
                             placeholder="Enter Offer Start Date"
                             value={startDate.toDateString()}
                             editable={false}
-                            // onChangeText={handleEndDateChange}
                         />
                     </Pressable>
+                    {startDateError && <Text style={styles.errorMessage}>Start date cannot be after end date</Text>}
                 </View>
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>End Date</Text>
@@ -151,27 +211,31 @@ export default function AddOffersScreen1({ navigation }) {
                     )}
                     <Pressable onPress={showEndDatePicker}>
                         <TextInput
-                            style={styles.inputBox}
+                            style={[
+                                styles.inputBox,
+                                endDateError && styles.inputError
+                            ]}
                             placeholder="Enter Offer End Date"
                             value={endDate.toDateString()}
                             editable={false}
-                            // onChangeText={handleEndDateChange}
                         />
                     </Pressable>
+                    {endDateError && <Text style={styles.errorMessage}>End date cannot be before start date</Text>}
                     
                 </View>
 
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Description</Text>
                     <TextInput
-                        style={[styles.inputBox, { height: 120, textAlignVertical: 'top'}]}
+                        style={[styles.inputBox, descriptionError && styles.inputError, { height: 120, textAlignVertical: 'top'}]}
                         placeholder="Enter Offer Description"
                         value={offerDescription}
                         onChangeText={handleOfferDescriptionChange}
                         multiline={true}
                     />
                 </View>
-                
+                {descriptionError && <Text style={styles.errorMessage}>{descriptionErrorMessage}</Text>}
+               
                 <StartUpModelPopup visible={visible}>
                 <View style={{alignItems: 'center'}}>
                         <View style={styles.header}>
@@ -200,7 +264,7 @@ export default function AddOffersScreen1({ navigation }) {
                     </View>
                 </StartUpModelPopup>
                 <View style={styles.fieldContainer}>
-                    <TouchableOpacity onPress={() => setVisble(true)} style={styles.submitBtn}>
+                    <TouchableOpacity onPress={handleOfferInsert} style={styles.submitBtn}>
                         <Text style={styles.submitText}>Submit</Text>
                     </TouchableOpacity>
                 </View>
@@ -309,5 +373,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    inputError: {
+        borderWidth: 4,
+        borderColor: COLORS.cancel,
+    },
+    errorMessage: {
+        color: COLORS.cancel,
+        fontSize: 14,
+        // marginTop: 2,
+        marginLeft: 15,
+        fontWeight: 'bold'
     },
 })

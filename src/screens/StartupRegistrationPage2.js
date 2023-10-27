@@ -7,44 +7,6 @@ import districts from '../consts/district'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import StartUpModelPopup from './StartUpModalPopup';
 
-// const StartUpModelPopup = ({visible, children}) => {
-//     const [showModal, setShowModal] = useState(visible)
-//     const scaleValue = useRef(new Animated.Value(0)).current
-
-//     useEffect(() => {
-//         toggleModal()
-//     }, [visible])
-
-//     const toggleModal = () => {
-//         if(visible) {
-//             setShowModal(true)
-//             Animated.spring(scaleValue, {
-//                 toValue: 1,
-//                 duration: 300,
-//                 useNativeDriver: true
-//             }).start();
-//         } else {
-            
-//             setTimeout(() => setShowModal(false), 200)
-//             Animated.timing(scaleValue, {
-//                 toValue: 0,
-//                 duration: 300,
-//                 useNativeDriver: true
-//             }).start();
-//         }
-//     }
-//     return (
-//         <Modal transparent visible={showModal}>
-//             <View style={styles.modalBackground}>
-//                 <Animated.View 
-//                     style={[styles.modalContainer, {transform: [{scale: scaleValue}]}]}>
-//                     {children}
-//                 </Animated.View>
-//             </View>
-//         </Modal>
-//     )
-// }
-
 export default function StartupRegistrationPage2({ navigation }) {
 
     const[registeredOffice, setRegisteredOffice] = useState('');
@@ -52,9 +14,13 @@ export default function StartupRegistrationPage2({ navigation }) {
     const[registeredDate, setRegisteredDate] = useState(new Date());
     const[showDatePicker, setShowDatePicker] = useState(null)
     const [visible, setVisble] = useState(false)
+
+    const [registeredOfficeError, setRegisteredOfficeError] = useState(false);
+
    
     const handleRegisteredOfficeChange = (text) => {
         setRegisteredOffice(text);
+        setRegisteredOfficeError(false)
     };
 
     const handleRegisteredDistrictChange = (text) => {
@@ -82,7 +48,20 @@ export default function StartupRegistrationPage2({ navigation }) {
     }
 
     const handleNavigation = () => {
-        navigation.navigate("OffersHome")
+        let isValid = true
+
+        if(!registeredOffice){
+            setRegisteredOfficeError(true)
+            isValid = false
+        }
+
+        if (isValid) {
+            setVisble(true)
+            // return;
+          }
+      
+          // Proceed with navigation to the next page
+          
     }
 
    
@@ -95,11 +74,14 @@ export default function StartupRegistrationPage2({ navigation }) {
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Registered Office</Text>
                     <TextInput
-                        style={styles.inputBox}
+                        style={[styles.inputBox, registeredOfficeError && styles.inputError]}
                         placeholder="Enter Registered Office"
                         value={registeredOffice}
                         onChangeText={handleRegisteredOfficeChange}
                     />
+                    {registeredOfficeError && (
+                        <Text style={styles.errorMessage}>Please Enter Registered</Text>
+                    )}
                 </View>
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Regisered District</Text>
@@ -140,23 +122,9 @@ export default function StartupRegistrationPage2({ navigation }) {
                             // onChangeText={handleEndDateChange}
                         />
                     </Pressable>
-                    {/* <TextInput
-                        style={styles.inputBox}
-                        placeholder="Enter Registered Date"
-                        value={registeredDate}
-                        onChangeText={handleRegisteredDateChange}
-                    /> */}
+        
                 </View>
-                {/* <View style={styles.fieldContainer}>
-                    <Text style={styles.inputLabel}>Address of the Business</Text>
-                    <TextInput
-                        style={styles.inputBox}
-                        placeholder="Enter Address"
-                        value={address}
-                        onChangeText={handleAddressChange}
-                    />
-                </View>
-                 */}
+                
                  <View style={styles.fieldContainerUpload}>
                     <View style={styles.fieldBox}>
                         <Text style={styles.fieldBoxText}>Registration Certificate</Text>
@@ -186,14 +154,14 @@ export default function StartupRegistrationPage2({ navigation }) {
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity
                             style={[styles.confirmButton, { backgroundColor: COLORS.blue }]}
-                            onPress={() => navigation.navigate("InitialPage")}
+                            onPress={() => {navigation.navigate("InitialPage")}}
                         >
                             <Text style={styles.buttonText}>Home</Text>
                         </TouchableOpacity> 
                  </View>
                 </StartUpModelPopup>
                 <View style={styles.fieldContainer}>
-                    <TouchableOpacity onPress={() => setVisble(true)} style={styles.submitBtn}>
+                    <TouchableOpacity onPress={handleNavigation} style={styles.submitBtn}>
                     {/* <TouchableOpacity onPress={handleNavigation} style={styles.submitBtn}> */}
                         <Text style={styles.submitText}>Submit</Text>
                     </TouchableOpacity>
@@ -340,4 +308,15 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
+    inputError: {
+        borderWidth: 4,
+        borderColor: COLORS.cancel, // Choose a color for error border
+      },
+      errorMessage: {
+        color: COLORS.cancel,
+        fontSize: 14,
+        marginTop: 5,
+        marginLeft: 10,
+        fontWeight: 'bold',
+      },
 })

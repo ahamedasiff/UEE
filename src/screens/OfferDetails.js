@@ -14,6 +14,8 @@ import COLORS from '../consts/colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import StartUpModelPopup from './StartUpModalPopup';
+import axios from 'axios';
+
 
 const { height } = Dimensions.get('screen');
 
@@ -28,6 +30,37 @@ const OfferDetails = ({navigation, route}) => {
   // const handleRoomType = () => {
   //   navigation.navigate("Rooms", {hotel: item})
   // }
+
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const handleUpdateOffer = () => {
+    navigation.navigate("UpdateOffersScreen", item 
+    // {
+    //   offerData: {
+    //     offerTitle: item.offerTitle,
+    //     offerCategory: item.offerCategory,
+    //     offerRate: item.offerRate,
+    //     offerDescription: item.offerDescription,
+    //     startDate: item.startDate,
+    //     endDate: item.endDate,
+    //   },
+    //   // route: route, // Pass the route prop
+    // }
+    )
+  }
+
+  const deleteOffer = async (id) => {
+    try {
+      await axios.delete(`http://192.168.43.9:3000/offer/${id}`)
+      console.log('Offer Deleted Successfully');
+      navigation.navigate("OffersHome")
+    } catch (error) {
+      console.error('Error:Error occurred while deleting the details', error);
+    }
+  }
 
   return (
     <SafeAreaView>
@@ -55,17 +88,22 @@ const OfferDetails = ({navigation, route}) => {
       </ImageBackground>
       <View>
         <View style={{marginTop:20, paddingHorizontal: 20}}>
-          <Text style={{fontSize: 24, fontWeight: 'bold'}}>{item.title}</Text>
-          <Text style={{fontSize: 20, fontWeight: '600', color: COLORS.dark, marginTop: 5}}>{item.category}</Text>
-          <Text style={{fontSize: 20, fontWeight: '600', color: COLORS.dark, marginTop: 5}}>{item.rate}</Text>
+          <Text style={{fontSize: 24, fontWeight: 'bold'}}>{item.offerTitle}</Text>
+          <Text style={{fontSize: 20, fontWeight: '600', color: COLORS.dark, marginTop: 5}}>{item.offerCategory}</Text>
+          <Text style={{fontSize: 20, fontWeight: '600', color: COLORS.dark, marginTop: 5}}>{item.offerRate}</Text>
           
           <View style={{marginTop: 10, marginBottom: 10}}>
           <Text style={{lineHeight: 20, color: COLORS.dark, fontSize: 17}}>
-              {item.description}
+              {item.offerDescription}
             </Text>
           </View>
-          <Text style={{fontSize: 17, fontWeight: 'bold', color: COLORS.dark, marginTop: 5}}>{`Start Date - ${item.startdate}`}</Text>
-          <Text style={{fontSize: 17, fontWeight: 'bold', color: COLORS.dark, marginTop: 5}}>{`End Date - ${item.endDate}`}</Text>
+          <Text style={{fontSize: 17, fontWeight: 'bold', color: COLORS.dark, marginTop: 5}}>
+          {`Start Date - ${item.startDate ? formatDate(item.startDate) : 'N/A'}`}
+          </Text>
+          <Text style={{fontSize: 17, fontWeight: 'bold', color: COLORS.dark, marginTop: 5}}>
+          {`End Date - ${item.endDate ? formatDate(item.endDate) : 'N/A'}`}
+
+          </Text>
 
         </View>
         <StartUpModelPopup visible={visible}>
@@ -89,7 +127,7 @@ const OfferDetails = ({navigation, route}) => {
           <View style={style.buttonContainer}>
                 <TouchableOpacity
                   style={[style.confirmButton, { backgroundColor: COLORS.cancel }]}
-                  // onPress={confirmDelete}
+                  onPress={() => deleteOffer(item._id)}
                 >
                   <Text style={style.buttonText}>Confirm</Text>
                 </TouchableOpacity>
@@ -102,7 +140,7 @@ const OfferDetails = ({navigation, route}) => {
           </View>
         </StartUpModelPopup>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, marginTop: 15 }}>
-            <TouchableOpacity style={style.btn} onPress={() => navigation.navigate("UpdateOffersScreen")}>
+            <TouchableOpacity style={style.btn} onPress={handleUpdateOffer}>
               <Text style={{ color: COLORS.white, fontSize: 18, fontWeight: 'bold' }}>Edit</Text>
             </TouchableOpacity>
             <TouchableOpacity style={style.btnCancel} onPress={() => setVisble(true)}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView, ScrollView, View, Text, StyleSheet, TextInput, TouchableOpacity, Pressable } from 'react-native'
 import COLORS from '../consts/colors'
 import categories from '../consts/category'
@@ -7,20 +7,32 @@ import { Picker } from '@react-native-picker/picker'
 import StartUpModelPopup from './StartUpModalPopup';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Image } from 'react-native'
+import axios from 'axios'
 
-export default function UpdateOffersScreen({ navigation }) {
+export default function UpdateOffersScreen({ navigation, route }) {
 
-    const[offerTitle, setofferTitle] = useState('')
-    const[offerCategory, setOfferCategory] = useState('')
-    const[offerRate, setOfferRate] = useState('')
-    const [offerDescription, setOfferDescription] = useState('');
-    const[startDate, setStartDate] = useState(new Date());
-    const[endDate, setEndDate] = useState(new Date());
+    const offerData = route.params;
+    const key = offerData._id
+
+    const[offerTitle, setOfferTitle] = useState(offerData.offerTitle);
+    const [offerCategory, setOfferCategory] = useState(offerData.offerCategory);
+    const [offerRate, setOfferRate] = useState(offerData.offerRate);
+    const [offerDescription, setOfferDescription] = useState(offerData.offerDescription);
+    const [startDate, setStartDate] = useState(new Date(offerData.startDate));
+    const [endDate, setEndDate] = useState(new Date(offerData.endDate));
     const[showDatePicker, setShowDatePicker] = useState(null)
     const [visible, setVisble] = useState(false)
+
+    const [titleError, setTitleError] = useState(false);
+    const [descriptionError, setDescriptionError] = useState(false);
+    const [titleErrorMessage, setTitleErrorMessage] = useState('');
+    const [descriptionErrorMessage, setDescriptionErrorMessage] = useState('');
+    const [startDateError, setStartDateError] = useState(false);
+    const [endDateError, setEndDateError] = useState(false);
+
    
-    const handleofferTitleChange = (text) => {
-        setofferTitle(text);
+    const handleOfferTitleChange = (text) => {
+        setOfferTitle(text);
     };
 
     const handleOfferCategoryChange = (text) => {
@@ -39,13 +51,15 @@ export default function UpdateOffersScreen({ navigation }) {
     }
 
     const handleDateChange = (event, selectedDate) => {
-        if(event.type === 'set' && selectedDate) {
-            if(showDatePicker === 'startDate') {
-                setStartDate(selectedDate)
-            } else if (showDatePicker === 'endDate'){
-                setEndDate(selectedDate)
+        if (event.type === 'set' && selectedDate) {
+            if (showDatePicker === 'startDate') {
+                setStartDate(selectedDate);
+                setStartDateError(false); // Reset error when the date is changed
+            } else if (showDatePicker === 'endDate') {
+                setEndDate(selectedDate);
+                setEndDateError(false); // Reset error when the date is changed
             }
-            setShowDatePicker(null)
+            setShowDatePicker(null);
         }
     }
 
@@ -57,7 +71,55 @@ export default function UpdateOffersScreen({ navigation }) {
         setShowDatePicker('endDate')
     }
 
+    const handleOfferUpdate = async () => {
+        // Validate offerTitle and offerDescription
+        if (!offerTitle) {
+            setTitleError(true);
+            setTitleErrorMessage('Enter a Offer Title');
+        } else {
+            setTitleError(false);
+            setTitleErrorMessage('');
+        }
 
+        if (!offerDescription) {
+            setDescriptionError(true);
+            setDescriptionErrorMessage('Enter Offer Description');
+        } else {
+            setDescriptionError(false);
+            setDescriptionErrorMessage('');
+        }
+
+        if(offerTitle && offerDescription) {
+            const updatedOffer = {
+                offerTitle,
+                offerCategory,
+                offerRate,
+                startDate: startDate.toDateString(), // Use ISO format
+                endDate: endDate.toDateString(), // Use ISO format
+                offerDescription,
+              };
+            
+              try {
+                await axios.put(`http://192.168.43.9:3000/offer/${key}`, updatedOffer);
+                console.log('Offer Updated Successfully');
+                setVisble(true); // Show success modal
+              } catch (error) {
+                console.error('Error updating offer:', error);
+              }
+        }
+        
+      }; 
+
+      useEffect(() => {
+        if (startDate > endDate) {
+            setStartDateError(true);
+            // setEndDateError(true)
+        } else {
+            setStartDateError(false);
+            // setEndDateError(false)
+        }
+    }, [startDate, endDate]);
+      
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -67,12 +129,13 @@ export default function UpdateOffersScreen({ navigation }) {
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Title</Text>
                     <TextInput
-                        style={styles.inputBox}
+                        style={[styles.inputBox, titleError && styles.inputError]} // Apply inputError style on validation error
                         placeholder="Enter Offer Name"
                         value={offerTitle}
-                        onChangeText={handleofferTitleChange}
+                        onChangeText={handleOfferTitleChange}
                     />
                 </View>
+                {titleError && <Text style={styles.errorMessage}>{titleErrorMessage}</Text>}
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Category</Text>
                     {/* <TextInput
@@ -129,15 +192,18 @@ export default function UpdateOffersScreen({ navigation }) {
                             minimumDate={new Date()}
                         />
                     )}
-                    <Pressable onPress={showStartDatePicker}>
+                   <Pressable onPress={showStartDatePicker}>
                         <TextInput
-                            style={styles.inputBox}
+                            style={[
+                                styles.inputBox,
+                                startDateError && styles.inputError
+                            ]}
                             placeholder="Enter Offer Start Date"
                             value={startDate.toDateString()}
                             editable={false}
-                            // onChangeText={handleEndDateChange}
                         />
                     </Pressable>
+                    {startDateError && <Text style={styles.errorMessage}>Start date cannot be after end date</Text>}
                 </View>
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>End Date</Text>
@@ -151,27 +217,31 @@ export default function UpdateOffersScreen({ navigation }) {
                     )}
                     <Pressable onPress={showEndDatePicker}>
                         <TextInput
-                            style={styles.inputBox}
+                            style={[
+                                styles.inputBox,
+                                endDateError && styles.inputError
+                            ]}
                             placeholder="Enter Offer End Date"
                             value={endDate.toDateString()}
                             editable={false}
-                            // onChangeText={handleEndDateChange}
                         />
                     </Pressable>
+                    {endDateError && <Text style={styles.errorMessage}>End date cannot be before start date</Text>}
+                    
                     
                 </View>
 
                 <View style={styles.fieldContainer}>
                     <Text style={styles.inputLabel}>Offer Description</Text>
                     <TextInput
-                        style={[styles.inputBox, { height: 120, textAlignVertical: 'top'}]}
+                        style={[styles.inputBox, descriptionError && styles.inputError, { height: 120, textAlignVertical: 'top'}]}
                         placeholder="Enter Offer Description"
                         value={offerDescription}
                         onChangeText={handleOfferDescriptionChange}
                         multiline={true}
                     />
                 </View>
-                
+                {descriptionError && <Text style={styles.errorMessage}>{descriptionErrorMessage}</Text>}
                 <StartUpModelPopup visible={visible}>
                 <View style={{alignItems: 'center'}}>
                         <View style={styles.header}>
@@ -200,7 +270,7 @@ export default function UpdateOffersScreen({ navigation }) {
                     </View>
                 </StartUpModelPopup>
                 <View style={styles.fieldContainer}>
-                    <TouchableOpacity onPress={() => setVisble(true)} style={styles.submitBtn}>
+                    <TouchableOpacity onPress={handleOfferUpdate} style={styles.submitBtn}>
                         <Text style={styles.submitText}>Update</Text>
                     </TouchableOpacity>
                 </View>
@@ -309,5 +379,16 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    inputError: {
+        borderWidth: 4,
+        borderColor: COLORS.cancel,
+    },
+    errorMessage: {
+        color: COLORS.cancel,
+        fontSize: 14,
+        // marginTop: 2,
+        marginLeft: 15,
+        fontWeight: 'bold'
     },
 })
